@@ -45,9 +45,10 @@ def HelperFunc(string):
   #plt.imshow(cv.cvtColor(gray, cv.COLOR_BGR2RGB))
 
   # basically bilateralFilter(img, d, sigmacolor, sigmaSpace, borderType)
+  # considers spatial & photometric distance
   bfilter = cv.bilateralFilter(gray, 11, 17, 17) #Noise reduction
 
-  # canny uses hystersis thresholding
+  # canny uses hystersis thresholding (two level threshold)
   edged = cv.Canny(bfilter, 30, 200) #Edge detection
 
   #plt.imshow(cv.cvtColor(edged, cv.COLOR_BGR2RGB))
@@ -103,7 +104,7 @@ def HelperFunc(string):
   text = text.replace(" ", "")
 
   # check if number is in DB
-  if(len(text)==10):
+  if len(text) == 10:
       fetchDB(text.upper())
 
   """# check if number is in DB ?

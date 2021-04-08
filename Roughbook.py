@@ -63,13 +63,17 @@ if __name__ == "__main__":
     cv.waitKey(2000)
 
     # canny uses hystersis thresholding
-    edged = cv.Canny(bfilter, 30, 250) #Edge detection
+    edged = cv.Canny(bfilter, 30, 255) #Edge detection
     # edged = cv.Canny(gray, 30, 200)
 
     #plt.imshow(cv.cvtColor(edged, cv.COLOR_BGR2RGB))
     cv.imshow('Frame3', edged)
     cv.waitKey(2000)
 
+    # RETR_TREE: Retrieves all of the
+    #                      contours and reconstructs a full hierarchy of nested contours.
+    # CHAIN_APPROX_SIMPLE compresses horizontal, vertical,
+    # and diagonal segments and leaves only their end points.
     keypoints = cv.findContours(edged.copy(), cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     contours = imutils.grab_contours(keypoints)
     contours = sorted(contours, key=cv.contourArea, reverse=True)[:10]
@@ -88,8 +92,10 @@ if __name__ == "__main__":
     #       break
 
     for contour in contours:
-      approx = cv.approxPolyDP(contour, 10, True)
-      """Can add condition for rectangle (basis of length & breadth) IMP """
+        # epsilon : Parameter specifying the approximation accuracy.
+        # epsilon : This is the maximum distance between the original curve and its approximation
+      approx = cv.approxPolyDP(contour, 10, True)  # (cnt, epsilon, closed)
+      """Can add condition for rectangle (basis of length & breadth)"""
       if len(approx) == 4 and 500 < cv.contourArea(contour):
           location = approx
           img1 = cv.drawContours(edged, [contour], 0, 255, -1)
@@ -115,7 +121,6 @@ if __name__ == "__main__":
     new_image = cv.bitwise_and(img, img, mask=mask)
     cv.imshow('Frame3', new_image)
     cv.waitKey(2000)
-
 
     #plt.imshow(cv.cvtColor(new_image, cv.COLOR_BGR2RGB))
 
