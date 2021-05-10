@@ -4,13 +4,12 @@ import cv2 as cv
 import numpy as np
 from matplotlib import pyplot as plt
 import imutils
-import easyocr
+import easyocr, pytesseract
 import time
 from tkinter import filedialog
 from tkinter import *
 import mysql.connector, sys, os
 from mysql.connector import Error
-
 
 def fetchFromDB(number):
     try:
@@ -24,11 +23,10 @@ def fetchFromDB(number):
         records = cursor.fetchone()
         # print(records)
         # print(len(records))
-        if(len(records)>0):
+        if(records!=None or len(records)>0):
             print(f'Number verified :) ')
         else:
             print("Number NOT verified :( ")
-
     except Error as e:
         print("Error reading data from MySQL table", e)
     finally:
@@ -40,14 +38,15 @@ def fetchFromDB(number):
 
 
 if __name__ == "__main__":
+    # initialise
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
     # To take image using gui
     root = Tk()
     root.title("MINI PROJECT")
 
     string = filedialog.askopenfilename(initialdir="D:/code/ALPR",
-                                        title="Select A File",
-                                        filetypes=(("*.png", "*.jpg"), ("all files", "*.*")))
+                                        title="Select A File")
 
     # load image as an object
     img = cv.imread(string)
@@ -55,12 +54,12 @@ if __name__ == "__main__":
 
     # plt.imshow(cv.cvtColor(gray, cv.COLOR_BGR2RGB))
     cv.imshow('Frame3', gray)
-    cv.waitKey(2000)
+    cv.waitKey(1000)
 
     # basically bilateralFilter(img, d, sigmacolor, sigmaSpace, borderType)
     bfilter = cv.bilateralFilter(gray, 15, 15, 15) #Noise reduction
     cv.imshow('Frame3', bfilter)
-    cv.waitKey(2000)
+    cv.waitKey(1000)
 
     # canny uses hystersis thresholding
     edged = cv.Canny(bfilter, 30, 255) #Edge detection
@@ -68,7 +67,7 @@ if __name__ == "__main__":
 
     #plt.imshow(cv.cvtColor(edged, cv.COLOR_BGR2RGB))
     cv.imshow('Frame3', edged)
-    cv.waitKey(2000)
+    cv.waitKey(1000)
 
     # RETR_TREE: Retrieves all of the
     #                      contours and reconstructs a full hierarchy of nested contours.
@@ -100,7 +99,7 @@ if __name__ == "__main__":
           location = approx
           img1 = cv.drawContours(edged, [contour], 0, 255, -1)
           cv.imshow('Frame3', img1)
-          cv.waitKey(2000)
+          cv.waitKey(1000)
           break
 
     # for contour in contours:
@@ -110,17 +109,17 @@ if __name__ == "__main__":
     #       location = approx
     #       img1 = cv.drawContours(edged, [contour], 0, 255, -1)
     #       cv.imshow('Frame3', img1)
-    #       cv.waitKey(2000)
+    #       cv.waitKey(1000)
 
 
     mask = np.zeros(gray.shape, np.uint8)
     new_image = cv.drawContours(mask, [location], 0, 255, -1)
     cv.imshow('Frame3', new_image)
-    cv.waitKey(2000)
+    cv.waitKey(1000)
 
     new_image = cv.bitwise_and(img, img, mask=mask)
     cv.imshow('Frame3', new_image)
-    cv.waitKey(2000)
+    cv.waitKey(1000)
 
     #plt.imshow(cv.cvtColor(new_image, cv.COLOR_BGR2RGB))
 
@@ -133,26 +132,17 @@ if __name__ == "__main__":
 
     #plt.imshow(cv.cvtColor(cropped_image, cv.COLOR_BGR2RGB))
 
-
-    # read text using easyocr
-    reader = easyocr.Reader(['en'], gpu=False)
-    result = reader.readtext(cropped_image)
-
-
-    # To solve the "IND" problem
-    array = []
-    for ele in result:
-        if len(ele[-2]) > 7:
-            array.append(ele[-2])
-            break
-
-    # results with the amount of confidence
+    # For tesseract
+    result = pytesseract.image_to_string(cropped_image)
     # print(result)
 
-    text = array[0]
+    # for tessearct
+    text = result
 
-    # Strip off the spaces present in between characters
+    # Strip off the spaces & unwanted chars present in between characters
     text = text.replace(" ", "")
+    text = text.strip()
+    text = re.sub('[\W_]+', '', text)
 
     # Check with the DB
     fetchFromDB(text)
@@ -167,6 +157,6 @@ if __name__ == "__main__":
 
     # show the frame with number
     cv.imshow('Frame3', res)
-    cv.waitKey(7000)
+    cv.waitKey(4000)
 
     print("Text: ", text)

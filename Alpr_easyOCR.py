@@ -1,5 +1,5 @@
 
-# Working code for video input !!
+# Working code for video input !! (easyOCR)
 import cv2 as cv
 import numpy as np
 from matplotlib import pyplot as plt
@@ -82,11 +82,9 @@ def HelperFunc(string):
 
   #plt.imshow(cv.cvtColor(cropped_image, cv.COLOR_BGR2RGB))
 
-
   # read text using easyocr
   reader = easyocr.Reader(['en'], gpu=False)
   result = reader.readtext(cropped_image)
-
 
   text = result[0][-2]
   font = cv.FONT_HERSHEY_SIMPLEX
@@ -112,13 +110,12 @@ def HelperFunc(string):
       h, w, c = img.shape
       cv.putText(img, "Flag: 1", (20, int(h)-10), font, 1, (0, 255, 0), 3)"""
 
-
 if __name__ == "__main__":
     # To take image using gui
     root = Tk()
     root.title("MINI PROJECT")
 
-    string = filedialog.askopenfilename(initialdir="C:/Users/Rohan Sodha/Desktop",
+    string = filedialog.askopenfilename(initialdir="D:/code/ALPR",
                                         title="Select A File")
 
     # Read the video from specified path
@@ -129,7 +126,6 @@ if __name__ == "__main__":
     currentTime = int(time.time())
 
     while (cam.isOpened()):
-
         # reading from frame
         ret, frame = cam.read()
         cv.imshow('Frame', frame)
