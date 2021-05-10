@@ -45,7 +45,7 @@ if __name__ == "__main__":
     root = Tk()
     root.title("MINI PROJECT")
 
-    string = filedialog.askopenfilename(initialdir="D:/code/ALPR",
+    string = filedialog.askopenfilename(initialdir="D:/code/ALPR/Images",
                                         title="Select A File")
 
     # load image as an object
@@ -54,12 +54,12 @@ if __name__ == "__main__":
 
     # plt.imshow(cv.cvtColor(gray, cv.COLOR_BGR2RGB))
     cv.imshow('Frame3', gray)
-    cv.waitKey(1000)
+    cv.waitKey(100)
 
     # basically bilateralFilter(img, d, sigmacolor, sigmaSpace, borderType)
     bfilter = cv.bilateralFilter(gray, 15, 15, 15) #Noise reduction
     cv.imshow('Frame3', bfilter)
-    cv.waitKey(1000)
+    cv.waitKey(100)
 
     # canny uses hystersis thresholding
     edged = cv.Canny(bfilter, 30, 255) #Edge detection
@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
     #plt.imshow(cv.cvtColor(edged, cv.COLOR_BGR2RGB))
     cv.imshow('Frame3', edged)
-    cv.waitKey(1000)
+    cv.waitKey(100)
 
     # RETR_TREE: Retrieves all of the
     #                      contours and reconstructs a full hierarchy of nested contours.
@@ -95,11 +95,11 @@ if __name__ == "__main__":
         # epsilon : This is the maximum distance between the original curve and its approximation
       approx = cv.approxPolyDP(contour, 10, True)  # (cnt, epsilon, closed)
       """Can add condition for rectangle (basis of length & breadth)"""
-      if len(approx) == 4 and 500 < cv.contourArea(contour):
+      if len(approx) == 4 and 100 < cv.contourArea(contour):
           location = approx
           img1 = cv.drawContours(edged, [contour], 0, 255, -1)
           cv.imshow('Frame3', img1)
-          cv.waitKey(1000)
+          cv.waitKey(100)
           break
 
     # for contour in contours:
@@ -109,17 +109,17 @@ if __name__ == "__main__":
     #       location = approx
     #       img1 = cv.drawContours(edged, [contour], 0, 255, -1)
     #       cv.imshow('Frame3', img1)
-    #       cv.waitKey(1000)
+    #       cv.waitKey(100)
 
 
     mask = np.zeros(gray.shape, np.uint8)
     new_image = cv.drawContours(mask, [location], 0, 255, -1)
     cv.imshow('Frame3', new_image)
-    cv.waitKey(1000)
+    cv.waitKey(100)
 
     new_image = cv.bitwise_and(img, img, mask=mask)
     cv.imshow('Frame3', new_image)
-    cv.waitKey(1000)
+    cv.waitKey(100)
 
     #plt.imshow(cv.cvtColor(new_image, cv.COLOR_BGR2RGB))
 
@@ -128,7 +128,7 @@ if __name__ == "__main__":
     (x2, y2) = (np.max(x), np.max(y))
     cropped_image = gray[x1:x2+1, y1:y2+1]
     cv.imshow('Frame3', cropped_image)
-    cv.waitKey(5000)
+    cv.waitKey(1000)
 
     #plt.imshow(cv.cvtColor(cropped_image, cv.COLOR_BGR2RGB))
 

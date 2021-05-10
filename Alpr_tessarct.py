@@ -121,7 +121,7 @@ if __name__ == "__main__":
     root = Tk()
     root.title("MINI PROJECT")
 
-    string = filedialog.askopenfilename(initialdir="D:/code/ALPR",
+    string = filedialog.askopenfilename(initialdir="D:/code/ALPR/Videos",
                                         title="Select A File")
 
     # Read the video from specified path
@@ -138,7 +138,7 @@ if __name__ == "__main__":
 
         if ret:
             currentTime2 = int(time.time())
-            if(currentTime2!=currentTime and currentTime2 % 2 == 0):
+            if(currentTime2!=currentTime and currentTime2 % 1 == 0):
                 cv.imwrite("NewPicture.jpg", frame)
                 try:
                   start = time.perf_counter()
